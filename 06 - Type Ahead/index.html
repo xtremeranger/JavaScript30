@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Type Ahead 👀</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <form class="search-form">
+    <input type="text" class="search" placeholder="City or State">
+    <ul class="suggestions">
+      <li>Filter for a city</li>
+      <li>or a state</li>
+    </ul>
+  </form>
+<script type="text/javascript">
+const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+const cities=[];
+fetch(endpoint)
+	.then(response => response.json())
+	.then(data => cities.push(...data));
+
+function findMatches(wordToMatch, cities){
+	const matches=cities.filter(city => {
+		const regex= new RegExp(wordToMatch,'gi');
+		return city.city.match(regex) || city.state.match(regex);
+	})
+	return matches.sort(sortStateThenCity);
+}
+
+function sortStateThenCity(a,b){
+	return (a.state==b.state) ? sortCity(a,b) : ( (a.state>b.state) ? 1:-1 );
+}
+function sortCity(a,b){
+	return (a.city==b.city) ? 0 : ( (a.city>b.city) ? 1 : -1 );
+}
+
+const searchInput = document.querySelector('.search');
+const suggestions =document.querySelector('.suggestions');
+function displayMatches() {
+	const matches=findMatches(this.value, cities);
+	const html= matches.map(match => {
+		const regex= new RegExp(this.value,'gi');
+		const cityName=match.city.replace(regex,`<span class="hl">${this.value}</span>`);
+		const statName=match.state.replace(regex,`<span class="hl">${this.value}</span>`);
+		return `
+		<li>
+			<span class="name">${cityName}, ${statName}</span>
+			<span class="population">${numberWithCommas(match.population)}</span>
+		</li>
+		`
+	}).join('');
+	suggestions.innerHTML=html;
+}
+searchInput.addEventListener("keyup",displayMatches);
+
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+</script>
+</body>
+</html>
