@@ -38,6 +38,10 @@
     input[type="checkbox"] {
       margin: 20px;
     }
+		input[type="checkbox"]:focus {
+			outline: 2px solid #ffc600;
+			outline-offset: 2px;
+		}
 
     p {
       margin: 0;
@@ -96,11 +100,10 @@
   </div>
 
 <script>
-	let isShiftDown=false;
 	let lastSelected=null;
 	
 	const checkboxes=Array.from(document.querySelectorAll('input[type="checkbox"]'));
-	checkboxes.forEach(checkbox => checkbox.addEventListener("change", boxChanged));
+	checkboxes.forEach(checkbox => checkbox.addEventListener("click", boxChanged));
 
 	/*
 	When a checkbox is checked:
@@ -111,36 +114,30 @@
 		- just check this one
 	*/
 	function boxChanged(event) {
-		const target=event.target;
 		// Only worry about checked, for now
-		if(!target.checked) {
+		if(!this.checked) {
 			// If 'lastSelected' is unchecked, clear it
-			if(lastSelected===target){
-				console.warn("target was lastSelected");
+			if(lastSelected===this){
 				lastSelected=null;
 			}
 			return;
 		}
 		// If shift is not pressed, or it is the first, or it is, just remember the last selected
-		if(!isShiftDown || !lastSelected) {
-			lastSelected=target;
+		if(!event.shiftKey || !lastSelected) {
+			lastSelected=this;
 			return;
 		}
 		// Checked and shift and the second check
 		
-		const targetIndex=checkboxes.indexOf(target);
 		const lastIndex=checkboxes.indexOf(lastSelected);
+		const thisIndex=checkboxes.indexOf(this);
+		
+		checkboxes.slice(Math.min(lastIndex,thisIndex)+1,Math.max(lastIndex,thisIndex)).forEach(checkbox => checkbox.checked=true);
 
-		const begin=(lastIndex<targetIndex)?lastIndex:targetIndex;
-		const end=(lastIndex<targetIndex)?targetIndex:lastIndex;
-
-
-		checkboxes.slice(begin+1,end).forEach(checkbox => checkbox.checked=true);
-
-		lastSelected=event.target;
+		lastSelected=this;
 	}
-	window.addEventListener("keydown",(event) => isShiftDown=(event.key==="Shift"));
-	window.addEventListener("keyup",(event) => isShiftDown=!(event.key==="Shift"));
+	// window.addEventListener("keydown",(event) => isShiftDown=(event.key==="Shift"));
+	// window.addEventListener("keyup",(event) => isShiftDown=!(event.key==="Shift"));
 </script>
 </body>
 </html>
