@@ -1,36 +1,32 @@
 const video=document.querySelector('.player__video');
-const controls={}
-controls.progress=document.querySelector('.progress');
-controls.progressIndicator=document.querySelector('.progress__filled');
-controls.buttons=document.querySelectorAll('.player__button');
-controls.sliders=document.querySelectorAll('.player__slider');
+const progress=document.querySelector('.progress');
+const progressIndicator=document.querySelector('.progress__filled');
+const playPauseButton=document.querySelector('.player__button.toggle');
+const skipButtons=document.querySelectorAll('.player__button[data-skip]');
+const sliders=document.querySelectorAll('.player__slider');
 
-controls.buttons.forEach(button => button.addEventListener("click",buttonClicked));
-controls.sliders.forEach(button => button.addEventListener("change",sliderChanged));
+video.addEventListener("click",playPause);
+video.addEventListener("play",updatePlayPauseButton);
+video.addEventListener("pause",updatePlayPauseButton);
+playPauseButton.addEventListener("click",playPause);
+skipButtons.forEach(button => button.addEventListener("click",skip));
+sliders.forEach(button => button.addEventListener("change",sliderChanged));
 
 let isSeeking=false;
-let position=0;
-controls.progress.addEventListener('mousedown', (event) => {
-  isSeeking = true;
-  position = event.offsetX;
-});
-controls.progress.addEventListener('mousemove', seek);
-controls.progress.addEventListener('mouseup', () => isSeeking = false);
+progress.addEventListener('click', seek);
+progress.addEventListener('mousedown', () => isSeeking = true);
+progress.addEventListener('mousemove', (event) => isSeeking && seek(event));
+progress.addEventListener('mouseup', () => isSeeking = false);
 
-window.setInterval(updateProgressBar,1000);
+//window.setInterval(updateProgressBar,1000);
+video.addEventListener("timeupdate",updateProgressBar);
 
-
-function buttonClicked() {
-	if(this.classList.contains('toggle')){
-		playPause(this);
-	}
-	else {
-		skip(this);
-	}
+function updatePlayPauseButton(){
+	playPauseButton.textContent=(video.paused)?'►' : '❚ ❚';
 }
 
-function playPause(button){
-	button.classList.toggle('isPaused');
+
+function playPause(){
 	if(video.paused){
 		video.play();
 	}
@@ -39,14 +35,13 @@ function playPause(button){
 	}
 }
 
-function skip(button){
-	video.currentTime+= parseFloat(button.dataset['skip']);
-	updateProgressBar();
+function skip(){
+	video.currentTime+= parseFloat(this.dataset['skip']);
 }
 
 function updateProgressBar() {
-	const progress=(video.currentTime==0)?0:video.currentTime/video.duration;
-	controls.progressIndicator.style['flex-basis']=`${progress*100}%`;
+	const progress=(video.currentTime/video.duration)*100;
+	progressIndicator.style['flex-basis']=`${progress}%`;
 }
 
 function sliderChanged() {
@@ -54,7 +49,5 @@ function sliderChanged() {
 }
 
 function seek(event) {
-  if (!isSeeking) return;
-	video.currentTime=video.duration*(event.offsetX/this.offsetWidth);
-	updateProgressBar();
+	video.currentTime=video.duration*(event.offsetX/progress.offsetWidth);
 }
