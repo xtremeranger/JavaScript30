@@ -58,6 +58,10 @@ body {
   border-color: #ffc600;
 }
 
+.player__button.isPaused{
+	content: "||";
+}
+
 .player__slider {
   width: 10px;
   height: 30px;
@@ -103,6 +107,18 @@ body {
   flex: 0;
   flex-basis: 50%;
 }
+
+.range__label {
+  color: white;
+  font-size: 10px;
+  max-width: max-content;
+  margin-inline: 0.3em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: sans-serif;
+}
+
 
 /* unholy css to style input type="range" */
 
