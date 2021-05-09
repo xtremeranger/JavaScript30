@@ -7,6 +7,17 @@
 </head>
 <body>
 <script>
+	const konami='ArrowUpArrowUpArrowDownArrowDownArrowLeftArrowRightArrowLeftArrowRightbaEnter';
+	let code='';
+	window.addEventListener("keyup",(event)=> {
+		code+=event.key;
+		if(!konami.startsWith(code)){code=''}
+		if(code===konami){
+			alert('KONAMI!');
+			cornify_add();
+			code='';
+		}
+	});
 </script>
 </body>
 </html>
