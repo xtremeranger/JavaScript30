@@ -51,6 +51,9 @@ h2 {
   font-weight: 100;
   display: flex;
 }
+.plates li.plates-actions {
+	border-bottom-width: 3px;
+}
 
 .plates label {
   flex: 1;
@@ -68,6 +71,12 @@ h2 {
 
 .plates input:checked + label:before {
   content: "🌮";
+}
+
+.plates button {
+	background: none;
+	border: 0;
+	cursor: pointer;
 }
 
 .add-items {

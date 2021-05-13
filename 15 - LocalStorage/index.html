@@ -17,7 +17,7 @@
     <h2>LOCAL TAPAS</h2>
     <p></p>
     <ul class="plates">
-      <li>Loading Tapas...</li>
+			<li class="plates-actions"><input type="checkbox" id="checkall" ><label for="checkall">Check/Uncheck All</label><button id="removeall">Remove All ❌</button></li>
     </ul>
     <form class="add-items">
       <input type="text" name="item" placeholder="Item Name" required>
@@ -30,44 +30,89 @@
   const itemsList = document.querySelector('.plates');
   const items = JSON.parse(localStorage.getItem('items')) || [];
 
-	addItems.addEventListener('submit',addItem);
 	function addItem(event) {
 		event.preventDefault();
-		const text= (this.querySelector('[name=item]')).value;
+
+		const text= this.item.value;
 		const item = {
 			text,
 			done: false
 		};
 		items.push(item);
-		populateList(items,itemsList);
-		localStorage.setItem('items', JSON.stringify(items));
+		itemsList.appendChild(makeItem(item,items.length-1));
+		updateStorage(items);
 		this.reset();
 	}
 
-	function populateList(plates=[],platesList){
-		platesList.innerHTML=plates.map((plate,index) => {
-			return `
-				<li>
-					<input type="checkbox" data-index=${index} id="item${index}" ${plate.done ? 'checked' : ''}>
-					<label for="item${index}">${plate.text}</label>
-				</li>
-			`;
-		}).join('');
-	}
-
-	function toggleDone(event) {
-		if(!event.target.matches('input')) return;
-		const element=event.target;
-		const index=element.dataset.index;
-		items[index].done=!items[index].done;
-		populateList(items,itemsList);
+	function updateStorage(items) {
 		localStorage.setItem('items', JSON.stringify(items));
 	}
 
-	itemsList.addEventListener('click',toggleDone);
+	function toggleDone(event) {
+		const element=this;
+		const index=element.dataset.index;
+		items[index].done=!items[index].done;
+		updateStorage(items);
+	}
+	function removeItem(event) {
+		const element=this;
+		const index=element.dataset.index;
+		items.splice(index,1);
+		itemsList.querySelector(`li[data-index="${index}"]`).remove();
+		updateStorage(items);
+	}
+	
+	function makeItem(plate,index) {
+		const itemID=`item${index}`;
+		const input=document.createElement('input');
+		input.type="checkbox";
+		input.id=itemID;
+		input.checked=plate.done;
+		input.dataset.index=index;
+		input.addEventListener("change",toggleDone);
+		
+		const label=document.createElement('label');
+		label.htmlFor=itemID;
+		label.appendChild(document.createTextNode(plate.text));
+		
+		const removeButton=document.createElement('button');
+		removeButton.appendChild(document.createTextNode('❌'));
+		removeButton.dataset.index=index;
+		removeButton.addEventListener("click",removeItem);
+		
+		const item=document.createElement('li');
+		item.dataset.index=index;
+		item.appendChild(input);
+		item.appendChild(label);
+		item.appendChild(removeButton);
+		return item;
+		
+	}
+	function populateList2(plates=[],platesList){
+		plates.forEach((plate,index) => {
+			platesList.appendChild(makeItem(plate,index));
+		})
+	}
 
-	populateList(items,itemsList);
+	function checkAll(params) {
+		const updatedItems=items.map(item => {item.done=this.checked;return item});
+		updateStorage(updatedItems);
+		itemsList.querySelectorAll(`input[data-index]`).forEach(item => item.checked=this.checked);
 
+	}
+	function removeAll(params) {
+		items.length=0;
+		updateStorage(items);
+		itemsList.querySelectorAll(`li[data-index]`).forEach(plate => plate.remove());
+	}
+	
+	addItems.addEventListener('submit',addItem);
+	// itemsList.addEventListener('click',toggleDone);
+	document.querySelector('#checkall').addEventListener('change',checkAll);
+  document.querySelector('#removeall').addEventListener('click',removeAll);
+  
+
+	populateList2(items,itemsList);
 </script>
 
 
