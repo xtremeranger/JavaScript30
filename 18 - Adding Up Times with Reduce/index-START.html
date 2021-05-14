@@ -228,8 +228,40 @@
 		console.log(totalTime);
 		//TODO make hours
 	}
-	v2(videos);
+	//v2(videos);
 
+	function wes(){
+		const timeNodes=Array.from(videos);
+		const totalSeconds=timeNodes
+			.map((node)=> node.dataset.time)
+			.map(timeCode => {
+				const [mins,seconds]=timeCode.split(':').map(parseFloat);
+				return mins*60 + seconds;
+			})
+			.reduce((total,current)=> total+current,0)
+		;
+		let secondsleft=totalSeconds;
+		const hours=Math.floor(secondsleft/3600);
+		secondsleft%=3600;
+		const mins=Math.floor(secondsleft/60);
+		secondsleft%=60;
+		console.log(`${hours}:${mins}:${secondsleft}`);
+	}
+	wes(videos);
+
+	function wes2(){
+		const totalSeconds=Array.from(videos).reduce((total,current)=> {
+			const [mins,seconds]=current.dataset.time.split(':').map(parseFloat);
+			return total+ (mins*60 + seconds);
+		},0);
+		let secondsleft=totalSeconds;
+		const hours=Math.floor(secondsleft/3600);
+		secondsleft%=3600;
+		const mins=Math.floor(secondsleft/60);
+		secondsleft%=60;
+		console.log(`${hours}:${mins}:${secondsleft}`);
+	}
+	wes2(videos);
 </script>
 </body>
 </html>
