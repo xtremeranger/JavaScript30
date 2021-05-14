@@ -3,6 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Videos</title>
+
+	<style>
+		.videos li::after {
+			content: attr(data-time);
+			display: inline-block;
+			margin-left: 1em;
+		}
+	</style>
 </head>
 <body>
   <ul class="videos">
@@ -182,6 +190,46 @@
     </li>
   </ul>
 <script>
+	const videos=document.querySelectorAll('.videos li');
+	
+	function v1(videos){
+		const addableTimes=Array.from(videos).map((video)=> {
+			const time=video.dataset.time;
+			const parts=time.split(':');
+			const mins=parseInt(parts[0]);
+			const seconds=parseInt(parts[1]);
+			return mins*60 + seconds;
+		});
+		const timeInSeconds=addableTimes.reduce((total,current)=> total+current,0)
+		console.log(timeInSeconds);
+		const seconds=parseInt(timeInSeconds%60);
+		let mins=parseInt(timeInSeconds/60);
+		let hours=0;
+		if(mins>60){
+			hours=parseInt(mins/60);
+			mins=parseInt(mins%60);
+			
+		}
+		console.log(`${hours}:${mins}:${seconds}`);
+	}
+	v1(videos);
+
+	function v2(videos){
+		const times=Array.from(videos).map((video)=> {
+			const time=video.dataset.time;
+			const parts=time.split(':');
+			return time.split(':');
+		});
+		const totalTime=times.reduce((total,current)=> {
+			total.mins+=parseInt(current[0]);
+			total.seconds+=parseInt(current[1]);
+			return total;
+		},{mins:0,seconds:0})
+		console.log(totalTime);
+		//TODO make hours
+	}
+	v2(videos);
+
 </script>
 </body>
 </html>
