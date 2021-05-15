@@ -17,6 +17,9 @@ html {
   margin: 2rem auto;
   border-radius: 2px;
 }
+.controls {
+	background: #ffc600;
+}
 
 /*clearfix*/
 .photobooth:after {
@@ -28,6 +31,8 @@ html {
 .photo {
   width: 100%;
   float: left;
+
+	transform: rotateY(180deg);
 }
 
 .player {
@@ -35,6 +40,8 @@ html {
   top: 20px;
   right: 20px;
   width:200px;
+
+	display: none;
 }
 
 /*
